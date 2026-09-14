@@ -1,0 +1,308 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/inter';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Theme tokens follow the shadcn-svelte convention: raw values live in
+ * :root / .dark, components consume the --color-* utilities mapped in
+ * @theme inline. Hues track the app palette: violet accent, cool
+ * neutral surfaces with a subtle tint.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: #f7f7fa;
+  --foreground: #141419;
+  --card: #ffffff;
+  --card-foreground: #141419;
+  --popover: #ffffff;
+  --popover-foreground: #141419;
+  --primary: #6f25d0;
+  --primary-foreground: #ffffff;
+  --secondary: #ececf1;
+  --secondary-foreground: #1c1c24;
+  --muted: #ececf1;
+  --muted-foreground: #5c5c6b;
+  --accent: #ececf1;
+  --accent-foreground: #1c1c24;
+  --destructive: #d93636;
+  --destructive-foreground: #ffffff;
+  --border: #e0e0e8;
+  --input: #d4d4de;
+  --ring: #6f25d0;
+
+  --surface-glow: #8b5cf6;
+}
+
+.dark {
+  --background: #0a0a0f;
+  --foreground: #f4f4f7;
+  --card: #101018;
+  --card-foreground: #f4f4f7;
+  --popover: #14141d;
+  --popover-foreground: #f4f4f7;
+  --primary: #a468f3;
+  --primary-foreground: #171321;
+  --secondary: #1b1b24;
+  --secondary-foreground: #f4f4f7;
+  --muted: #14141d;
+  --muted-foreground: #8b8b9a;
+  --accent: #1b1b24;
+  --accent-foreground: #f4f4f7;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #23232e;
+  --input: #2c2c39;
+  --ring: #a468f3;
+
+  --surface-glow: #a468f3;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-surface-glow: var(--surface-glow);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--bits-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--bits-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings:
+      'cv11' 1,
+      'ss01' 1;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Hero spectrum: vertical bars pulsing like an audio visualizer. Each
+ * bar sets --h (rest height), --d (cycle duration), and --dl (negative
+ * delay so they run out of phase). Pure CSS, GPU-friendly. */
+.eq-bar {
+  height: var(--h, 50%);
+  border-radius: 2px 2px 0 0;
+  transform-origin: bottom;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--primary) 40%, transparent),
+    transparent 85%
+  );
+  animation: eq-rise var(--d, 2s) ease-in-out var(--dl, 0s) infinite alternate;
+}
+@keyframes eq-rise {
+  from {
+    transform: scaleY(0.22);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Scroll reveal, driven by the reveal attachment in lib/reveal.ts. */
+.reveal {
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.6, 0.2, 1),
+    translate 0.7s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+  .eq-bar {
+    animation: none;
+    transform: scaleY(0.55);
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/*
+ * Docs prose. The typography plugin reads --tw-prose-* vars; map them to
+ * the site tokens so docs follow the theme. Invert vars apply under
+ * .dark through dark:prose-invert.
+ */
+.doc-content {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-kbd: var(--foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--muted);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+  --tw-prose-invert-body: var(--foreground);
+  --tw-prose-invert-headings: var(--foreground);
+  --tw-prose-invert-lead: var(--muted-foreground);
+  --tw-prose-invert-links: var(--primary);
+  --tw-prose-invert-bold: var(--foreground);
+  --tw-prose-invert-counters: var(--muted-foreground);
+  --tw-prose-invert-bullets: var(--muted-foreground);
+  --tw-prose-invert-hr: var(--border);
+  --tw-prose-invert-quotes: var(--foreground);
+  --tw-prose-invert-quote-borders: var(--border);
+  --tw-prose-invert-captions: var(--muted-foreground);
+  --tw-prose-invert-kbd: var(--foreground);
+  --tw-prose-invert-code: var(--foreground);
+  --tw-prose-invert-pre-code: var(--foreground);
+  --tw-prose-invert-pre-bg: var(--muted);
+  --tw-prose-invert-th-borders: var(--border);
+  --tw-prose-invert-td-borders: var(--border);
+}
+
+/* Inline code: kill the typography plugin's backtick quote marks and
+ * style the chip ourselves. */
+.doc-content :where(code):not(:where(pre code)) {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  padding: 0.1rem 0.35rem;
+  font-weight: 500;
+}
+.doc-content :where(code):not(:where(pre code))::before,
+.doc-content :where(code):not(:where(pre code))::after {
+  content: none;
+}
+
+/* Tables scroll inside their own box instead of pushing the page wide. */
+.doc-content :where(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.doc-content :where(pre code) {
+  white-space: pre;
+}
+
+/* Heading anchors: # prefix appears on hover, still a real link. */
+.doc-heading {
+  position: relative;
+  scroll-margin-top: 5.5rem;
+}
+.doc-heading .doc-anchor {
+  margin-left: -1.1em;
+  padding-right: 0.35em;
+  color: var(--primary);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.doc-heading:hover .doc-anchor,
+.doc-heading .doc-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* Code blocks: relative host for the injected copy button. */
+.doc-pre {
+  position: relative;
+}
+.doc-copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  padding: 0.4rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  background: var(--card);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+}
+.doc-pre:hover .doc-copy,
+.doc-copy:focus-visible {
+  opacity: 1;
+}
+.doc-copy:hover {
+  color: var(--foreground);
+}
+@media (pointer: coarse) {
+  .doc-copy {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "syncedAt": "2026-09-14T21:56:51.184Z",
+  "source": "../Melovian/docs/en",
+  "docs": [
+    {
+      "slug": "getting-started",
+      "title": "Getting started",
+      "file": "getting-started.md"
+    },
+    {
+      "slug": "requirements",
+      "title": "Requirements",
+      "file": "requirements.md"
+    },
+    {
+      "slug": "features",
+      "title": "Features",
+      "file": "features.md"
+    },
+    {
+      "slug": "configuration",
+      "title": "Configuration",
+      "file": "configuration.md"
+    },
+    {
+      "slug": "docker",
+      "title": "Web deployment (Docker)",
+      "file": "docker.md"
+    },
+    {
+      "slug": "build",
+      "title": "Build",
+      "file": "build.md"
+    },
+    {
+      "slug": "development",
+      "title": "Development",
+      "file": "development.md"
+    }
+  ]
+}

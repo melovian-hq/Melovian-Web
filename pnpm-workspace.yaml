@@ -1,0 +1,48 @@
+# pnpm 11 reads all non-registry config from this file (not .npmrc or
+# package.json#pnpm). Keys are camelCase. See pnpm.io/supply-chain-security.
+
+# Only install releases that have been public for at least 2 days.
+# New versions are where most supply-chain attacks land; pnpm resolves
+# down to the newest version old enough, or fails if none qualifies.
+minimumReleaseAge: 2880
+minimumReleaseAgeStrict: true
+# Fail closed when the registry omits the `time` field. Set to true if a
+# private registry/mirror without publish times breaks installs.
+minimumReleaseAgeIgnoreMissingTime: false
+minimumReleaseAgeExcludePrune: true
+
+# Reject a version whose trust evidence (trusted publisher > provenance >
+# none) is weaker than earlier releases of the same package. Catches
+# account-takeover publishes.
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # semver 5.7.2 and 6.3.1 are the official security backports (ReDoS
+  # fix) from the npm team. Those release lines predate provenance
+  # attestation, so the publish-date based check false-positives on them.
+  # Pulled in by lighthouse through @lhci/cli.
+  - semver@5.7.2
+  - semver@6.3.1
+
+# Transitive deps must resolve from the registry (or file:/link:/trusted
+# hosts). Only direct deps may use git or tarball sources.
+blockExoticSubdeps: true
+
+# Dependency build scripts are off by default and unapproved packages
+# error out instead of warning. Approve individual packages below after
+# reviewing what their install script does.
+strictDepBuilds: true
+allowBuilds: {}
+
+# Verify the store against lockfile integrity hashes on install.
+verifyStoreIntegrity: true
+
+# Fail on `pnpm run` / `pnpm exec` when node_modules is out of sync with
+# the lockfile instead of silently running stale code.
+verifyDepsBeforeRun: error
+
+# chokidar 4.0.2 and 4.0.3 fail trustPolicy: they were published without
+# the SLSA provenance attestation that 4.0.0/4.0.1 (and later 5.0.0)
+# carry. Pin to 4.0.1, the last provenance-signed release inside the
+# ^4.0.0 range svelte-check accepts.
+overrides:
+  chokidar: 4.0.1
