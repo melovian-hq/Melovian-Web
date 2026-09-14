@@ -1,0 +1,76 @@
+{
+  "fetchedAt": "2026-09-14T22:44:36.113Z",
+  "source": "https://github.com/melovian-hq/Melovian/releases.atom",
+  "releases": [
+    {
+      "tag": "nightly-2026.09.12-fd248bf",
+      "title": "nightly-2026.09.12-fd248bf",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/nightly-2026.09.12-fd248bf",
+      "published": "2026-09-12T09:43:39Z",
+      "notes": "<p>fix(linux): bundle webkit helpers, allow desktop ws origin, ignore ro…</p>"
+    },
+    {
+      "tag": "nightly-2026.09.12-f04f8ac",
+      "title": "nightly-2026.09.12-f04f8ac: fix(sandbox): allow webkit-required paths in desktop landlock ruleset",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/nightly-2026.09.12-f04f8ac",
+      "published": "2026-09-12T08:50:09Z",
+      "notes": "<p>With landlock on, webkit_user_content_manager_new crashed with<br>\nWebKit's deliberate-crash sentinel (0xbbadbeef) because init opens<br>\n/dev/null and friends outside the allowlist. Bisected empirically with a<br>\ncgo probe: read access to /dev is the minimum that unblocks it.</p>\n<p>Desktop mode now grants RW on /tmp, /dev/shm (webkit IPC buffers), and<br>\n/dev/dri (render nodes for accelerated output), plus RO on /dev, /proc,<br>\n/sys, /var, and /run for fontconfig caches and hardware info. Verified<br>\nend to end: the AppImage launches and serves the UI with landlock<br>\nenabled.</p>"
+    },
+    {
+      "tag": "nightly-2026.09.12-81b99bc",
+      "title": "nightly-2026.09.12-81b99bc: docs(agents): expand prose rules for newer model tells",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/nightly-2026.09.12-81b99bc",
+      "published": "2026-09-12T07:58:45Z",
+      "notes": "<p>Add banned patterns for 2025-2026 model output: -ing participle tails,<br>\ncopula avoidance, unnamed attribution, chatbot residue, rule-of-three<br>\nadjective stacks, marketing register, and formulaic endings. Ban en dash<br>\nstand-ins, smart quotes, and zero-width characters alongside emdashes.<br>\nNote in AGENTS.md that the vendored no-ai-slop files carry local<br>\nadditions that re-vendoring would overwrite.</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.12",
+      "title": "v0.1.0-rc.12",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.12",
+      "published": "2026-09-09T23:16:21Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 12</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.11",
+      "title": "v0.1.0-rc.11",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.11",
+      "published": "2026-09-09T22:47:09Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 11</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.10",
+      "title": "v0.1.0-rc.10",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.10",
+      "published": "2026-09-09T22:28:37Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 10</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.9",
+      "title": "v0.1.0-rc.9",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.9",
+      "published": "2026-09-09T22:09:15Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 9</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.8",
+      "title": "v0.1.0-rc.8",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.8",
+      "published": "2026-09-09T21:57:30Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 8</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.7",
+      "title": "v0.1.0-rc.7",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.7",
+      "published": "2026-09-09T21:45:26Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 7</p>"
+    },
+    {
+      "tag": "v0.1.0-rc.6",
+      "title": "v0.1.0-rc.6",
+      "url": "https://github.com/melovian-hq/Melovian/releases/tag/v0.1.0-rc.6",
+      "published": "2026-09-09T21:35:57Z",
+      "notes": "<p>Melovian 0.1.0 release candidate 6</p>"
+    }
+  ]
+}

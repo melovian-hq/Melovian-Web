@@ -6,10 +6,11 @@
   import Hero from '$lib/components/site/Hero.svelte'
   import Platforms from '$lib/components/site/Platforms.svelte'
   import Screenshots from '$lib/components/site/Screenshots.svelte'
-  import { JSON_LD, SITE, SITE_URL } from '$lib/constants'
+  import { FAQS, JSON_LD, SITE, SITE_URL } from '$lib/constants'
+  import { faqPageJsonLd, jsonLdScript } from '$lib/jsonld'
 
   const title = `${SITE.name} | ${SITE.tagline}`
-  const jsonLd = JSON.stringify(JSON_LD)
+  const jsonLd = jsonLdScript([JSON_LD, faqPageJsonLd(FAQS)])
 </script>
 
 <svelte:head>
@@ -22,7 +23,7 @@
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={SITE.description} />
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  {@html `<script type="application/ld+json">${jsonLd}${'<'}/script>`}
+  {@html jsonLd}
 </svelte:head>
 
 <Hero />

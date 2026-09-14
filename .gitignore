@@ -29,3 +29,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+.tmp
+test-results
+playwright-report
+static/og

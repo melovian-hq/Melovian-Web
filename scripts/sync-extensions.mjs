@@ -59,21 +59,33 @@ const entries = Array.isArray(registry.extensions) ? registry.extensions : []
 // Rebuild the asset dir from scratch so removed extensions drop their files.
 await rm(assetDir, { recursive: true, force: true })
 
+async function copyAsset(entry, rel) {
+  const source = path.join(sourceDir, rel)
+  if (!existsSync(source)) {
+    console.warn(`${entry.id}: asset points at missing file ${rel}`)
+    return
+  }
+  const dest = path.join(assetDir, entry.id, path.basename(rel))
+  await mkdir(path.dirname(dest), { recursive: true })
+  await cp(source, dest)
+  return `/extensions/${entry.id}/${path.basename(rel)}`
+}
+
 const synced = []
 for (const entry of entries) {
   const next = { ...entry }
   for (const key of ['icon', 'image']) {
     const rel = entry[key]
     if (typeof rel !== 'string' || rel === '') continue
-    const source = path.join(sourceDir, rel)
-    if (!existsSync(source)) {
-      console.warn(`${entry.id}: ${key} points at missing file ${rel}`)
-      continue
+    next[key] = (await copyAsset(entry, rel, next)) ?? entry[key]
+  }
+  if (Array.isArray(entry.screenshots)) {
+    next.screenshots = []
+    for (const rel of entry.screenshots) {
+      if (typeof rel !== 'string' || rel === '') continue
+      const rewritten = await copyAsset(entry, rel, next)
+      if (rewritten) next.screenshots.push(rewritten)
     }
-    const dest = path.join(assetDir, entry.id, path.basename(rel))
-    await mkdir(path.dirname(dest), { recursive: true })
-    await cp(source, dest)
-    next[key] = `/extensions/${entry.id}/${path.basename(rel)}`
   }
   synced.push(next)
 }

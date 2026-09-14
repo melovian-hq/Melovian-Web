@@ -2,6 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
+      "autodiscoverUrlBlocklist": ["404.html"],
       "settings": {
         "preset": "desktop"
       }

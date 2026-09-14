@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import CodeIcon from '@lucide/svelte/icons/code'
   import DownloadIcon from '@lucide/svelte/icons/download'
   import PuzzleIcon from '@lucide/svelte/icons/puzzle'
@@ -42,8 +43,12 @@
       {/if}
       <Badge variant="outline" class="shrink-0">v{entry.version}</Badge>
     </div>
-    <CardTitle class="text-base">{entry.name}</CardTitle>
-    <CardDescription class="text-pretty">
+    <CardTitle class="text-base">
+      <a href={resolve(`/extensions/${entry.id}`)} class="hover:text-primary transition-colors">
+        {entry.name}
+      </a>
+    </CardTitle>
+    <CardDescription class="line-clamp-2 text-pretty">
       {entry.description ?? entry.id}
     </CardDescription>
   </CardHeader>
@@ -53,6 +58,9 @@
         <ShieldCheckIcon />
         audited
       </Badge>
+      {#if entry.risk && entry.risk !== 'low'}
+        <Badge variant="outline">{entry.risk} risk</Badge>
+      {/if}
       {#each capabilityBadges(entry) as badge (badge)}
         <Badge variant="outline">{badge}</Badge>
       {/each}
@@ -62,13 +70,20 @@
     </div>
   </CardContent>
   <CardFooter class="gap-2">
-    <Button size="sm" href={entry.package.url} download class="flex-1">
+    <Button size="sm" href={resolve(`/extensions/${entry.id}`)} variant="default" class="flex-1">
+      Details
+    </Button>
+    <Button
+      size="sm"
+      variant="outline"
+      href={entry.package.url}
+      download
+      aria-label="Download {entry.name} zip{formatBytes(entry.package.bytes)
+        ? `, ${formatBytes(entry.package.bytes)}`
+        : ''}"
+      title="Download .zip"
+    >
       <DownloadIcon />
-      <span
-        >.zip{formatBytes(entry.package.bytes)
-          ? ` · ${formatBytes(entry.package.bytes)}`
-          : ''}</span
-      >
     </Button>
     <Button
       size="sm"
@@ -77,6 +92,7 @@
       target="_blank"
       rel="external noopener noreferrer"
       aria-label="View source for {entry.name}"
+      title="View source"
     >
       <CodeIcon />
     </Button>

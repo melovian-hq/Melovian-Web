@@ -1,5 +1,6 @@
 import { SITE_URL } from '$lib/constants'
 import { DOCS, manifest } from '$lib/docs/docs'
+import { EXTENSIONS } from '$lib/extensions/registry'
 import type { RequestHandler } from './$types'
 
 export const prerender = true
@@ -18,7 +19,9 @@ export const GET: RequestHandler = () => {
   const urls = [
     url('/', '1.0'),
     url('/extensions', '0.8'),
+    url('/changelog', '0.8'),
     url('/docs', '0.8'),
+    ...EXTENSIONS.map((e) => url(`/extensions/${e.id}`, '0.7')),
     ...DOCS.map((d) => url(`/docs/${d.slug}`, '0.7')),
   ]
   return new Response(

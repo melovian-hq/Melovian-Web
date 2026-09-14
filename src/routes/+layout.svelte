@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onNavigate } from '$app/navigation'
   import type { Snippet } from 'svelte'
   import SiteFooter from '$lib/components/site/SiteFooter.svelte'
   import SiteHeader from '$lib/components/site/SiteHeader.svelte'
@@ -9,6 +10,23 @@
 
   $effect(() => {
     document.documentElement.classList.toggle('dark', theme.resolved === 'dark')
+  })
+
+  // Cross-fade page navigations where the browser supports it. Skipped
+  // entirely under reduced-motion since the transition never runs.
+  onNavigate((navigation) => {
+    if (
+      !document.startViewTransition ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return
+    }
+    return new Promise((resolve) => {
+      document.startViewTransition(async () => {
+        resolve()
+        await navigation.complete
+      })
+    })
   })
 </script>
 

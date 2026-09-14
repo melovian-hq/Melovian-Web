@@ -4,12 +4,13 @@
  * dev, and build; do not edit it by hand.
  */
 import registryJson from './registry.json'
-import { LINKS } from '$lib/constants'
+import { LINKS, SITE_URL } from '$lib/constants'
 
 export type RegistryPackage = {
   url: string
   sha256: string
   bytes: number
+  signature?: string
 }
 
 export type RegistryCapabilities = {
@@ -26,14 +27,38 @@ export type RegistryAudit = {
   warnings: string[]
 }
 
+export type RegistryVersion = {
+  version: string
+  url: string
+  sha256: string
+  bytes: number
+  signature?: string
+  releasedAt?: string
+  notes?: string
+}
+
+export type RegistryChangelog = {
+  version: string
+  date?: string
+  notes?: string
+}
+
 export type RegistryEntry = {
   id: string
   name: string
   version: string
   description?: string
   author?: string
+  homepage?: string
+  license?: string
+  tags?: string[]
   icon?: string
   image?: string
+  screenshots?: string[]
+  risk?: 'low' | 'medium' | 'high'
+  externalUrls?: string[]
+  versions?: RegistryVersion[]
+  changelog?: RegistryChangelog[]
   package: RegistryPackage
   capabilities: RegistryCapabilities
   audit: RegistryAudit
@@ -49,8 +74,22 @@ export type RegistryIndex = {
 export const REGISTRY = registryJson as RegistryIndex
 export const EXTENSIONS = REGISTRY.extensions
 
+export function findExtension(id: string): RegistryEntry | undefined {
+  return EXTENSIONS.find((entry) => entry.id === id)
+}
+
 export function extensionSourceUrl(id: string): string {
-  return `${LINKS.extensionsRepo}/tree/main/extensions/${id}`
+  return `${LINKS.extensionsRepo}/tree/master/extensions/${id}`
+}
+
+// melovian://install-extension/<id> opens the desktop app straight into the
+// extensions tab with an install prompt.
+export function deepLinkUrl(id: string): string {
+  return `melovian://install-extension/${id}`
+}
+
+export function extensionPageUrl(id: string): string {
+  return `/extensions/${id}`
 }
 
 export function capabilityBadges(entry: RegistryEntry): string[] {
@@ -69,4 +108,81 @@ export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`
+}
+
+export function releasedDate(entry: RegistryEntry): string {
+  return entry.versions?.[0]?.releasedAt ?? entry.changelog?.[0]?.date ?? ''
+}
+
+// Every unique tag across the registry, sorted.
+export function allTags(): string[] {
+  const tags = new Set<string>()
+  for (const entry of EXTENSIONS) {
+    for (const tag of entry.tags ?? []) tags.add(tag)
+  }
+  return [...tags].sort()
+}
+
+function escXml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+
+function rssDate(date: string | undefined): string {
+  const parsed = date ? Date.parse(date) : NaN
+  const fallback = REGISTRY.generatedAt ? Date.parse(REGISTRY.generatedAt) : 0
+  return new Date(Number.isNaN(parsed) ? fallback : parsed).toUTCString()
+}
+
+// RSS item per released version, newest first.
+function rssItems(entries: RegistryEntry[]): string {
+  const items: { entry: RegistryEntry; version: RegistryVersion }[] = []
+  for (const entry of entries) {
+    for (const version of entry.versions ?? []) {
+      items.push({ entry, version })
+    }
+  }
+  items.sort((a, b) => (a.version.releasedAt ?? '').localeCompare(b.version.releasedAt ?? ''))
+  items.reverse()
+  return items
+    .map(
+      ({ entry, version }) => `    <item>
+      <title>${escXml(entry.name)} ${escXml(version.version)}</title>
+      <link>${SITE_URL}${extensionPageUrl(entry.id)}</link>
+      <guid isPermaLink="false">${escXml(entry.id)}-${escXml(version.version)}</guid>
+      <pubDate>${rssDate(version.releasedAt)}</pubDate>
+      <description>${escXml(version.notes || entry.description || '')}</description>
+    </item>`,
+    )
+    .join('\n')
+}
+
+export function registryRssXml(): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Melovian extensions</title>
+    <link>${SITE_URL}/extensions</link>
+    <description>New extension releases in the Melovian registry</description>
+${rssItems(EXTENSIONS)}
+  </channel>
+</rss>
+`
+}
+
+export function extensionRssXml(entry: RegistryEntry): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${escXml(entry.name)} releases</title>
+    <link>${SITE_URL}${extensionPageUrl(entry.id)}</link>
+    <description>${escXml(entry.description ?? `Releases for ${entry.name}`)}</description>
+${rssItems([entry])}
+  </channel>
+</rss>
+`
 }

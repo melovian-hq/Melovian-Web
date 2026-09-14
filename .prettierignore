@@ -2,3 +2,10 @@
 # synced from the Melovian repo
 src/lib/docs/content/
 src/lib/docs/manifest.json
+
+test-results/
+playwright-report/
+.tmp/
+static/og/
+src/lib/changelog/releases.json
+src/lib/extensions/registry.json
