@@ -3,7 +3,7 @@ import { MediaQuery } from 'svelte/reactivity'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
-export const THEME_STORAGE_KEY = 'melovian-theme'
+const THEME_STORAGE_KEY = 'melovian-theme'
 
 const prefersDark = new MediaQuery('(prefers-color-scheme: dark)')
 const stored = new PersistedState<ThemeMode>(THEME_STORAGE_KEY, 'system', {

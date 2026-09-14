@@ -10,10 +10,3 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & {
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T
-export type WithoutChildren<T> = T extends {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  children?: any
-}
-  ? Omit<T, 'children'>
-  : T
-export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>

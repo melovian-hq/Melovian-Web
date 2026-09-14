@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
+  import { asset, resolve } from '$app/paths'
   import CodeIcon from '@lucide/svelte/icons/code'
   import DownloadIcon from '@lucide/svelte/icons/download'
   import PuzzleIcon from '@lucide/svelte/icons/puzzle'
@@ -29,7 +29,7 @@
     <div class="flex items-start justify-between gap-3">
       {#if entry.icon}
         <img
-          src={entry.icon}
+          src={asset(entry.icon)}
           alt=""
           class="size-10 shrink-0 rounded-lg object-contain"
           loading="lazy"

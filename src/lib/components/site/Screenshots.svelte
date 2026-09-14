@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs'
   import { SCREENSHOTS } from '$lib/constants'
   import { reveal } from '$lib/reveal'
@@ -32,7 +33,7 @@
               )}
             >
               <img
-                src={shot.src}
+                src={asset(shot.src)}
                 alt={shot.alt}
                 class="block w-full"
                 width={shot.device === 'mobile' ? 780 : 1440}

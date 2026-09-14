@@ -1,4 +1,4 @@
-import { mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from '@playwright/test'
 
@@ -8,6 +8,10 @@ mkdirSync(tmp, { recursive: true })
 process.env.TMPDIR = tmp
 
 const port = 4519
+// Prefer a system chromium when present to skip the bundled download.
+// In CI the file is absent and Playwright uses its installed browser.
+const systemChromium = process.env.CHROMIUM_PATH || '/usr/bin/chromium'
+const executablePath = existsSync(systemChromium) ? systemChromium : undefined
 
 export default defineConfig({
   testDir: './tests',
@@ -16,9 +20,8 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: `http://localhost:${port}`,
-    // Use the system chromium; skips the ~150MB playwright download.
     launchOptions: {
-      executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
+      executablePath,
       args: ['--no-sandbox'],
     },
   },

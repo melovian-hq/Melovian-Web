@@ -12,6 +12,7 @@
  * used as-is.
  */
 
+import './lib/env.mjs'
 import { copyFile, mkdir, readdir, stat, unlink } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'

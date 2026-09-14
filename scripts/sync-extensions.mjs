@@ -16,6 +16,7 @@
  * site still builds and deploys when the registry checkout is not around.
  */
 
+import './lib/env.mjs'
 import { existsSync } from 'node:fs'
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'

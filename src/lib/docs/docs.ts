@@ -29,7 +29,7 @@ for (const [path, raw] of Object.entries(rawModules)) {
   rawBySlug.set(slug, raw)
 }
 
-export function docRaw(slug: string): string | null {
+function docRaw(slug: string): string | null {
   return rawBySlug.get(slug) ?? null
 }
 

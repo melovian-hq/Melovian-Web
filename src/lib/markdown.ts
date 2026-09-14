@@ -1,3 +1,4 @@
+import { base } from '$app/paths'
 import { Marked, type Tokens } from 'marked'
 
 const REPO_BLOB = 'https://github.com/melovian-hq/Melovian'
@@ -45,7 +46,7 @@ marked.use({
       const repoPath = resolveRepoPath(pathPart)
       if (repoPath.startsWith(DOCS_DIR) && repoPath.endsWith('.md')) {
         const slug = repoPath.slice(DOCS_DIR.length, -3)
-        const to = `/docs/${slug}${anchor ? `#${anchor}` : ''}`
+        const to = `${base}/docs/${slug}${anchor ? `#${anchor}` : ''}`
         return `<a href="${to}"${titleAttr}>${inner}</a>`
       }
       const kind = /\.[a-zA-Z0-9]+$/.test(repoPath) ? 'blob' : 'tree'

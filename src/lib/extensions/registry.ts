@@ -6,14 +6,14 @@
 import registryJson from './registry.json'
 import { LINKS, SITE_URL } from '$lib/constants'
 
-export type RegistryPackage = {
+type RegistryPackage = {
   url: string
   sha256: string
   bytes: number
   signature?: string
 }
 
-export type RegistryCapabilities = {
+type RegistryCapabilities = {
   script: boolean
   wasm: boolean
   styles: number
@@ -22,12 +22,12 @@ export type RegistryCapabilities = {
   playerHooks: number
 }
 
-export type RegistryAudit = {
+type RegistryAudit = {
   status: 'pass'
   warnings: string[]
 }
 
-export type RegistryVersion = {
+type RegistryVersion = {
   version: string
   url: string
   sha256: string
@@ -37,7 +37,7 @@ export type RegistryVersion = {
   notes?: string
 }
 
-export type RegistryChangelog = {
+type RegistryChangelog = {
   version: string
   date?: string
   notes?: string
@@ -88,7 +88,7 @@ export function deepLinkUrl(id: string): string {
   return `melovian://install-extension/${id}`
 }
 
-export function extensionPageUrl(id: string): string {
+function extensionPageUrl(id: string): string {
   return `/extensions/${id}`
 }
 

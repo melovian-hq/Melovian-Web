@@ -1,5 +1,10 @@
 # melovian-web
 
+[![CI](https://github.com/melovian-hq/Melovian-Web/actions/workflows/ci.yml/badge.svg)](https://github.com/melovian-hq/Melovian-Web/actions/workflows/ci.yml)
+[![Deploy](https://github.com/melovian-hq/Melovian-Web/actions/workflows/deploy.yml/badge.svg)](https://github.com/melovian-hq/Melovian-Web/actions/workflows/deploy.yml)
+[![CodeQL](https://github.com/melovian-hq/Melovian-Web/actions/workflows/codeql.yml/badge.svg)](https://github.com/melovian-hq/Melovian-Web/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/melovian-hq/Melovian-Web/badge)](https://scorecard.dev/viewer/?uri=github.com/melovian-hq/Melovian-Web)
+
 Marketing site for [Melovian](https://github.com/melovian-hq/Melovian), the open source music player for Subsonic-compatible servers and local folders.
 
 Prerendered static site: SvelteKit + adapter-static + Svelte 5 (runes) + Tailwind CSS v4 + bits-ui + runed, with shadcn-svelte-style components and `@lucide/svelte` icons. Every page is rendered to plain HTML at build time into `dist/`; the client then hydrates for instant navigation.
@@ -14,7 +19,10 @@ pnpm preview     # serve the production build locally
 pnpm check       # svelte-kit sync + svelte-check
 pnpm lint        # eslint
 pnpm format      # prettier
+pnpm deps:check  # knip: unused files, deps, and exports
+pnpm test        # playwright smoke tests
 pnpm lighthouse  # build + Lighthouse CI assertions
+pnpm verify      # all of the above in sequence
 ```
 
 ## Configuration
@@ -65,7 +73,19 @@ The gallery renders at `/extensions`. The app fetches the same index for remote 
 
 ## Deploy
 
-Any static host works: `pnpm build`, publish `dist/`. Remember to set `PUBLIC_SITE_URL` for the real domain so canonical and OG URLs are absolute and correct.
+Pushes to `master` build and publish to GitHub Pages via `.github/workflows/deploy.yml`. Any static host works the same way: `pnpm build`, publish `dist/`.
+
+By default the site deploys to the project page at `melovian-hq.github.io/Melovian-Web/` and the workflow sets `BASE_PATH` and `PUBLIC_SITE_URL` automatically. When a custom domain is configured, set the `SITE_URL` repository variable (Settings, Secrets and variables, Actions, Variables) to the full origin, for example `https://melovian.example.com`. The workflow then drops the base path and generates canonical, sitemap, and OG URLs against that domain.
+
+## CI
+
+- `ci.yml`: typecheck, lint, format, knip, build, Playwright smoke tests, dependency review on PRs, Lighthouse budgets on master.
+- `deploy.yml`: GitHub Pages build and deploy.
+- `codeql.yml`: CodeQL analysis for JS/TS on pushes, PRs, and a weekly schedule.
+- `scorecard.yml`: OpenSSF Scorecard weekly, results published to code scanning.
+- `dependabot.yml`: weekly npm and actions updates with a 7 day cooldown and grouped ecosystems.
+
+All third-party actions are pinned to commit SHAs and every job runs behind step-security/harden-runner.
 
 ## Credits
 

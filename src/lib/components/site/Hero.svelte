@@ -1,5 +1,6 @@
 <script lang="ts">
   import PlayIcon from '@lucide/svelte/icons/play'
+  import { asset } from '$app/paths'
   import { Button } from '$lib/components/ui/button'
   import { LINKS, SITE } from '$lib/constants'
   import { reveal } from '$lib/reveal'
@@ -97,7 +98,7 @@
           <span class="bg-muted-foreground/30 size-2.5 rounded-full"></span>
         </div>
         <img
-          src="/screenshots/desktop-dark-home.webp"
+          src={asset('/screenshots/desktop-dark-home.webp')}
           alt="{SITE.name} home screen browsing a music library"
           class="block w-full"
           width="1440"

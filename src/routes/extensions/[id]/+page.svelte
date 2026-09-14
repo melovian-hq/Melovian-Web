@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
+  import { asset, resolve } from '$app/paths'
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left'
   import CodeIcon from '@lucide/svelte/icons/code'
   import DownloadIcon from '@lucide/svelte/icons/download'
@@ -82,7 +82,7 @@
 
     <div class="mt-6 flex flex-wrap items-start gap-5">
       {#if entry.icon}
-        <img src={entry.icon} alt="" class="size-20 shrink-0 rounded-2xl object-contain" />
+        <img src={asset(entry.icon)} alt="" class="size-20 shrink-0 rounded-2xl object-contain" />
       {:else}
         <div
           class="bg-primary/10 text-primary flex size-20 shrink-0 items-center justify-center rounded-2xl"
@@ -177,7 +177,7 @@
       <div class="grid gap-4 sm:grid-cols-2">
         {#each entry.screenshots as shot (shot)}
           <img
-            src={shot}
+            src={asset(shot)}
             alt="{entry.name} screenshot"
             class="border-border w-full rounded-xl border object-cover"
             loading="lazy"
