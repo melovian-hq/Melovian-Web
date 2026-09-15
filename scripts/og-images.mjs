@@ -155,6 +155,10 @@ function card({ title, sub }) {
 const docManifest = JSON.parse(
   await readFile(path.join(root, 'src/lib/docs/manifest.json'), 'utf8'),
 )
+const storeItems = JSON.parse(await readFile(path.join(root, 'src/lib/store/items.json'), 'utf8'))
+const extRegistry = JSON.parse(
+  await readFile(path.join(root, 'src/lib/extensions/registry.json'), 'utf8'),
+)
 
 const pages = [
   { file: 'docs', title: 'Documentation', sub: 'Install, configure, and run it anywhere' },
@@ -164,6 +168,17 @@ const pages = [
     sub: 'Melovian documentation',
   })),
   { file: 'extensions', title: 'Extensions', sub: 'Audited community packages for the player' },
+  ...extRegistry.extensions.map((e) => ({
+    file: `extensions-${e.id}`,
+    title: e.name,
+    sub: e.description ?? `Melovian extension v${e.version}`,
+  })),
+  { file: 'store', title: 'Store', sub: 'Physical Melovian, in limited runs' },
+  ...storeItems.map((i) => ({
+    file: `store-${i.id}`,
+    title: i.name,
+    sub: i.tagline,
+  })),
   { file: 'changelog', title: 'Changelog', sub: 'Every release, newest first' },
 ]
 

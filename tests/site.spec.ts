@@ -85,3 +85,62 @@ test('prerendered /404 page works without js navigation', async ({ page }) => {
   expect(res?.ok()).toBeTruthy()
   await expect(page.getByRole('heading', { name: 'This page is off the record' })).toBeVisible()
 })
+
+test('store lists the big box edition as coming soon', async ({ page }) => {
+  await page.goto('/store')
+  await expect(page.getByRole('heading', { name: 'Melovian, in a box' })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Big Box Physical Edition/ })).toBeVisible()
+  await expect(page.getByText('Coming soon').first()).toBeVisible()
+})
+
+test('big box page opens the 3d lid', async ({ page }) => {
+  await page.goto('/store/big-box-edition')
+  const toggle = page.getByRole('button', { name: 'Open the box' })
+  await expect(toggle).toBeVisible()
+  await toggle.click()
+  await expect(page.getByRole('button', { name: 'Close the box' })).toBeVisible()
+  await expect(page.locator('.open .lid')).toBeAttached()
+  // Arrow keys orbit the model without a pointer.
+  await page.locator('.stage').press('ArrowRight')
+})
+
+test('store rss feed is valid xml and announces the item', async ({ page }) => {
+  const res = await page.goto('/store/rss.xml')
+  expect(res?.ok()).toBeTruthy()
+  expect(res?.headers()['content-type']).toContain('xml')
+  const body = await res?.text()
+  expect(body).toContain('<rss')
+  expect(body).toContain('Big Box Physical Edition')
+  expect(body).toContain('Coming soon')
+})
+
+test('extension detail page renders metadata and sections', async ({ page }) => {
+  await page.goto('/extensions/genre-palette')
+  await expect(page).toHaveTitle(/Genre palette/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Genre palette' })).toBeVisible()
+  await expect(page.getByText('Security', { exact: true })).toBeVisible()
+  await expect(page.getByText('Privacy', { exact: true })).toBeVisible()
+  await expect(page.getByText('Version history', { exact: true })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Install in Melovian/ })).toBeVisible()
+})
+
+test('unknown extension id returns 404', async ({ page }) => {
+  const response = await page.goto('/extensions/does-not-exist')
+  expect(response?.status()).toBe(404)
+})
+
+test('registry RSS feed is well-formed', async ({ request }) => {
+  const response = await request.get('/extensions/rss.xml')
+  expect(response.ok()).toBe(true)
+  const body = await response.text()
+  expect(body).toContain('<rss version="2.0">')
+  expect(body).toContain('<item>')
+})
+
+test('per-extension RSS feed is well-formed', async ({ request }) => {
+  const response = await request.get('/extensions/genre-palette/rss.xml')
+  expect(response.ok()).toBe(true)
+  const body = await response.text()
+  expect(body).toContain('<rss version="2.0">')
+  expect(body).toContain('genre-palette-')
+})

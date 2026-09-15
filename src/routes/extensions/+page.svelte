@@ -62,6 +62,7 @@
   eyebrow="Extensions"
   title="Customize the player"
   description="Extensions restyle tracks, inject themes, and decorate the player. Every package passes a strict CI audit, ships signed, and is verified by sha256 and signature at install time."
+  contentClass="mt-6"
 >
   {#if EXTENSIONS.length === 0}
     <p class="text-muted-foreground">
@@ -102,14 +103,13 @@
         {/each}
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           href="{SITE_URL}/extensions/rss.xml"
           rel="external noopener noreferrer"
-          class="gap-1.5"
           aria-label="RSS feed for extension releases"
+          title="RSS feed"
         >
           <RssIcon class="size-4" />
-          Releases
         </Button>
       </div>
     </div>

@@ -57,6 +57,10 @@ export type RegistryEntry = {
   screenshots?: string[]
   risk?: 'low' | 'medium' | 'high'
   externalUrls?: string[]
+  permissions?: string[]
+  minAppVersion?: string
+  requires?: string[]
+  delisted?: { reason: string; at: string }
   versions?: RegistryVersion[]
   changelog?: RegistryChangelog[]
   package: RegistryPackage
@@ -112,6 +116,21 @@ export function formatBytes(bytes: number): string {
 
 export function releasedDate(entry: RegistryEntry): string {
   return entry.versions?.[0]?.releasedAt ?? entry.changelog?.[0]?.date ?? ''
+}
+
+// Extensions sharing at least one tag with entry, ranked by overlap.
+export function relatedExtensions(entry: RegistryEntry | undefined, limit = 3): RegistryEntry[] {
+  if (!entry?.tags?.length) return []
+  const wanted = new Set(entry.tags)
+  return EXTENSIONS.filter((other) => other.id !== entry.id)
+    .map((other) => ({
+      other,
+      shared: (other.tags ?? []).filter((tag) => wanted.has(tag)).length,
+    }))
+    .filter(({ shared }) => shared > 0)
+    .sort((a, b) => b.shared - a.shared || a.other.name.localeCompare(b.other.name))
+    .slice(0, limit)
+    .map(({ other }) => other)
 }
 
 // Every unique tag across the registry, sorted.
