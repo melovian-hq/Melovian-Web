@@ -6,7 +6,11 @@
   import { Badge } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
   import { SITE, SITE_URL, LINKS } from '$lib/constants'
-  import { allTags, EXTENSIONS, REGISTRY } from '$lib/extensions/registry'
+  import { browser } from '$app/environment'
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
+  import { page } from '$app/state'
+  import { allTags, EXTENSIONS, REGISTRY, searchExtensions } from '$lib/extensions/registry'
   import { breadcrumbJsonLd, jsonLdScript } from '$lib/jsonld'
   import { reveal } from '$lib/reveal'
 
@@ -21,19 +25,25 @@
   )
 
   let query = $state('')
-  let activeTag = $state('')
+  // Tag chips elsewhere link here with ?tag= so the filter survives shares.
+  // page.url.searchParams throws during prerendering, so read it only in
+  // the browser where the ?tag= deep link lands.
+  let activeTag = $state(browser ? (page.url.searchParams.get('tag') ?? '') : '')
 
-  const filtered = $derived(
-    EXTENSIONS.filter((entry) => {
-      if (activeTag && !(entry.tags ?? []).includes(activeTag)) return false
-      const q = query.trim().toLowerCase()
-      if (!q) return true
-      return [entry.name, entry.description ?? '', entry.author ?? '', entry.id]
-        .join(' ')
-        .toLowerCase()
-        .includes(q)
-    }),
-  )
+  const filtered = $derived.by(() => {
+    const q = query.trim()
+    const pool = q ? searchExtensions(q) : EXTENSIONS
+    if (!activeTag) return pool
+    return pool.filter((entry) => (entry.tags ?? []).includes(activeTag))
+  })
+
+  function toggleTag(tag: string) {
+    activeTag = activeTag === tag ? '' : tag
+    const url = activeTag
+      ? resolve(`/extensions?tag=${encodeURIComponent(activeTag)}`)
+      : resolve('/extensions')
+    void goto(url, { keepFocus: true, noScroll: true, replaceState: true })
+  }
 </script>
 
 <svelte:head>
@@ -94,7 +104,7 @@
         {#each allTags() as tag (tag)}
           <button
             type="button"
-            onclick={() => (activeTag = activeTag === tag ? '' : tag)}
+            onclick={() => toggleTag(tag)}
             aria-pressed={activeTag === tag}
             class="focus-visible:ring-ring rounded-full outline-none focus-visible:ring-2"
           >
@@ -119,9 +129,9 @@
         Nothing matches{query ? ` "${query}"` : ''}{activeTag ? ` in #${activeTag}` : ''}.
       </p>
     {:else}
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {#each filtered as entry, i (entry.id)}
-          <div {@attach reveal} style="transition-delay: {(i % 3) * 80}ms">
+          <div {@attach reveal} style="transition-delay: {(i % 4) * 70}ms">
             <ExtensionCard {entry} />
           </div>
         {/each}

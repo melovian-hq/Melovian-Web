@@ -107,6 +107,49 @@ export function capabilityBadges(entry: RegistryEntry): string[] {
   return out
 }
 
+export type CapabilityDetail = { label: string; explain: string }
+
+// Clickable capability chips on the extension page get a plain-language
+// explanation each.
+export function capabilityDetails(entry: RegistryEntry): CapabilityDetail[] {
+  const caps = entry.capabilities
+  const out: CapabilityDetail[] = []
+  if (caps.trackRules > 0)
+    out.push({
+      label: `${caps.trackRules} rules`,
+      explain: 'CSS rules that restyle matching tracks, like badges or progress bars.',
+    })
+  if (caps.styles > 0)
+    out.push({
+      label: `${caps.styles} styles`,
+      explain: 'Stylesheets injected into the player interface.',
+    })
+  if (caps.script)
+    out.push({
+      label: 'script',
+      explain: 'A sandboxed TypeScript entry point. It cannot reach the network or filesystem.',
+    })
+  if (caps.wasm)
+    out.push({
+      label: 'wasm',
+      explain: 'A compiled WebAssembly module running inside the same sandbox.',
+    })
+  if (caps.appTheme)
+    out.push({
+      label: 'theme',
+      explain: 'Can restyle the whole app chrome, not just track rows.',
+    })
+  return out
+}
+
+// Badge colors per risk level.
+export function riskBadgeClass(risk: RegistryEntry['risk']): string {
+  if (risk === 'high') return 'border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400'
+  if (risk === 'medium')
+    return 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400'
+  return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+}
+
 export function formatBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return ''
   if (bytes < 1024) return `${bytes} B`
@@ -140,6 +183,100 @@ export function allTags(): string[] {
     for (const tag of entry.tags ?? []) tags.add(tag)
   }
   return [...tags].sort()
+}
+
+// Author names are free-form in manifests, so author pages key on a
+// slugified form. Two names that slugify the same share one page.
+export function authorSlug(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'unknown'
+  )
+}
+
+// Route template for author pages. Pair with resolve():
+// resolve('/extensions/author/[slug]', { slug: authorSlug(name) })
+export const AUTHOR_ROUTE = '/extensions/author/[slug]'
+
+// Unique author slugs for prerendering.
+export function authorSlugs(): string[] {
+  const slugs = new Set<string>()
+  for (const entry of EXTENSIONS) {
+    if (entry.author) slugs.add(authorSlug(entry.author))
+  }
+  return [...slugs].sort()
+}
+
+export function extensionsByAuthorSlug(slug: string): RegistryEntry[] {
+  return EXTENSIONS.filter((entry) => entry.author && authorSlug(entry.author) === slug)
+}
+
+// Ordered-subsequence score for one term against one token. Consecutive
+// hits and hits at the token start score higher. 0 means no match.
+function subseqScore(term: string, token: string): number {
+  let score = 0
+  let ti = 0
+  let streak = 0
+  for (const ch of term) {
+    const found = token.indexOf(ch, ti)
+    if (found === -1) return 0
+    streak = found === ti ? streak + 1 : 0
+    score += 1 + streak + (found === 0 ? 4 : 0)
+    ti = found + 1
+  }
+  return score
+}
+
+// Fuzzy match a query against a field. A literal substring wins highest.
+// Otherwise every whitespace-separated query term must subsequence-match
+// some token of the field, which keeps typo-tolerant matches without
+// letting a query smear across a whole description. 0 means no match.
+function fuzzyScore(query: string, text: string): number {
+  const q = query.trim().toLowerCase()
+  const t = text.toLowerCase()
+  if (!q || !t) return 0
+  const substringAt = t.indexOf(q)
+  if (substringAt === 0) return 100 + q.length
+  if (substringAt > 0) {
+    const wordStart = t[substringAt - 1] === ' ' || t[substringAt - 1] === '-'
+    return (wordStart ? 70 : 50) + q.length
+  }
+  const tokens = t.split(/[^a-z0-9]+/).filter(Boolean)
+  const terms = q.split(/\s+/).filter(Boolean)
+  let total = 0
+  for (const term of terms) {
+    let best = 0
+    for (const token of tokens) {
+      const s = subseqScore(term, token)
+      if (s > best) best = s
+    }
+    if (best === 0) return 0
+    total += best
+  }
+  return total
+}
+
+// Fuzzy search over name, description, author, tags, and id. Returns
+// entries with score, best first.
+export function searchExtensions(query: string): RegistryEntry[] {
+  const q = query.trim()
+  if (!q) return []
+  return EXTENSIONS.map((entry) => {
+    const fields: [string, number][] = [
+      [entry.name, 4],
+      [entry.id, 3],
+      [entry.author ?? '', 2],
+      [(entry.tags ?? []).join(' '), 3],
+      [entry.description ?? '', 1],
+    ]
+    const score = Math.max(...fields.map(([text, weight]) => fuzzyScore(q, text) * weight))
+    return { entry, score }
+  })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || a.entry.name.localeCompare(b.entry.name))
+    .map(({ entry }) => entry)
 }
 
 function escXml(text: string): string {

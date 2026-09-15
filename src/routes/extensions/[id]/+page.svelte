@@ -20,13 +20,16 @@
   import { Separator } from '$lib/components/ui/separator'
   import { SITE, SITE_URL, LINKS } from '$lib/constants'
   import {
-    capabilityBadges,
+    AUTHOR_ROUTE,
+    authorSlug,
+    capabilityDetails,
     deepLinkUrl,
     extensionSourceUrl,
     findExtension,
     formatBytes,
     relatedExtensions,
     releasedDate,
+    riskBadgeClass,
   } from '$lib/extensions/registry'
   import { breadcrumbJsonLd, jsonLdScript } from '$lib/jsonld'
 
@@ -34,6 +37,7 @@
 
   let installFallback = $state(false)
   let linkCopied = $state(false)
+  let openCap = $state<string | null>(null)
 
   // Custom protocols fail silently when nothing claims them. If the page
   // is still visible and focused after a beat, the app is probably not
@@ -107,7 +111,7 @@
 </svelte:head>
 
 {#if entry}
-  <section class="mx-auto w-full max-w-4xl px-6 pt-6 pb-12 md:pt-8 md:pb-16">
+  <section class="mx-auto w-full max-w-6xl px-6 pt-6 pb-12 md:pt-8 md:pb-16">
     {#if entry.delisted}
       <div
         class="mb-6 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-400"
@@ -157,7 +161,7 @@
             </Badge>
           {/if}
           {#if entry.risk}
-            <Badge variant="outline">{entry.risk} risk</Badge>
+            <Badge variant="outline" class={riskBadgeClass(entry.risk)}>{entry.risk} risk</Badge>
           {/if}
         </div>
         {#if entry.description}
@@ -166,7 +170,14 @@
           </p>
         {/if}
         <div class="text-muted-foreground mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-          {#if entry.author}<span>by {entry.author}</span>{/if}
+          {#if entry.author}
+            <a
+              href={resolve(AUTHOR_ROUTE, { slug: authorSlug(entry.author) })}
+              class="text-primary decoration-primary/40 underline underline-offset-4 transition-colors hover:decoration-primary"
+            >
+              by {entry.author}
+            </a>
+          {/if}
           {#if entry.license}<span>{entry.license}</span>{/if}
           {#if releasedDate(entry)}<span>released {releasedDate(entry)}</span>{/if}
           {#if entry.homepage}
@@ -184,7 +195,14 @@
         {#if entry.tags?.length}
           <div class="mt-3 flex flex-wrap gap-1.5">
             {#each entry.tags as tag (tag)}
-              <Badge variant="outline" class="text-muted-foreground">#{tag}</Badge>
+              <a href={resolve(`/extensions?tag=${encodeURIComponent(tag)}`)}>
+                <Badge
+                  variant="outline"
+                  class="text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+                >
+                  #{tag}
+                </Badge>
+              </a>
             {/each}
           </div>
         {/if}
@@ -327,12 +345,33 @@
                 title={entry.package.sha256}>{entry.package.sha256}</code
               >
             </li>
-            <li class="flex items-start gap-3 py-2.5">
-              <ListChecksIcon class="text-muted-foreground mt-0.5 size-4 shrink-0" />
-              <span class="text-muted-foreground">Capabilities</span>
-              <span class="ml-auto text-right">
-                {capabilityBadges(entry).join(', ') || 'none'}
-              </span>
+            <li class="py-2.5">
+              <div class="flex items-start gap-3">
+                <ListChecksIcon class="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                <span class="text-muted-foreground">Capabilities</span>
+                <div class="ml-auto flex flex-wrap justify-end gap-1.5">
+                  {#each capabilityDetails(entry) as cap (cap.label)}
+                    <button
+                      type="button"
+                      class={cn(
+                        'border-border hover:border-primary/50 hover:text-primary cursor-pointer rounded-md border px-1.5 py-0.5 text-xs transition-colors',
+                        openCap === cap.label && 'border-primary/60 bg-primary/5 text-primary',
+                      )}
+                      aria-expanded={openCap === cap.label}
+                      onclick={() => (openCap = openCap === cap.label ? null : cap.label)}
+                    >
+                      {cap.label}
+                    </button>
+                  {:else}
+                    <span>none</span>
+                  {/each}
+                </div>
+              </div>
+              {#if openCap}
+                <p class="text-muted-foreground mt-2 text-xs leading-relaxed">
+                  {capabilityDetails(entry).find((c) => c.label === openCap)?.explain}
+                </p>
+              {/if}
             </li>
           </ul>
           {#if entry.audit.warnings.length > 0}

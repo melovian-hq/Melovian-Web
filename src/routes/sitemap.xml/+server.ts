@@ -1,6 +1,6 @@
 import { SITE_URL } from '$lib/constants'
 import { DOCS, manifest } from '$lib/docs/docs'
-import { EXTENSIONS } from '$lib/extensions/registry'
+import { authorSlugs, EXTENSIONS } from '$lib/extensions/registry'
 import { STORE_ITEMS } from '$lib/store/store'
 import type { RequestHandler } from './$types'
 
@@ -24,6 +24,7 @@ export const GET: RequestHandler = () => {
     url('/changelog', '0.8'),
     url('/docs', '0.8'),
     ...EXTENSIONS.map((e) => url(`/extensions/${e.id}`, '0.7')),
+    ...authorSlugs().map((slug) => url(`/extensions/author/${slug}`, '0.6')),
     ...STORE_ITEMS.map((i) => url(`/store/${i.id}`, '0.7')),
     ...DOCS.map((d) => url(`/docs/${d.slug}`, '0.7')),
   ]

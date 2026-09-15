@@ -124,6 +124,38 @@ test('extension detail page renders metadata and sections', async ({ page }) => 
   await expect(page.getByRole('link', { name: /Install in Melovian/ })).toBeVisible()
 })
 
+test('author page lists extensions and is linked from detail page', async ({ page }) => {
+  await page.goto('/extensions/genre-palette')
+  await page.getByRole('link', { name: 'by Melovian' }).click()
+  await expect(page).toHaveURL(/\/extensions\/author\/melovian/)
+  await expect(page.getByRole('heading', { name: 'Melovian', exact: true })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Genre palette' })).toBeVisible()
+})
+
+test('unknown author slug returns 404', async ({ page }) => {
+  const response = await page.goto('/extensions/author/nobody-here')
+  expect(response?.status()).toBe(404)
+})
+
+test('tag badge on detail page filters the gallery', async ({ page }) => {
+  await page.goto('/extensions/genre-palette')
+  await page.getByRole('link', { name: '#genre' }).click()
+  await expect(page).toHaveURL(/\/extensions\?tag=genre/)
+  await expect(page.getByRole('link', { name: 'Genre palette' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Neon arcade' })).toBeHidden()
+})
+
+test('gallery search fuzzy-matches name and tags', async ({ page }) => {
+  await page.goto('/extensions')
+  const input = page.getByPlaceholder('Search extensions')
+  // Misspelled substring still lands on the card via subsequence match.
+  await input.fill('neon')
+  await expect(page.getByRole('link', { name: 'Neon arcade' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Genre palette' })).toBeHidden()
+  await input.fill('podcast')
+  await expect(page.getByRole('link', { name: 'Podcast progress style' })).toBeVisible()
+})
+
 test('unknown extension id returns 404', async ({ page }) => {
   const response = await page.goto('/extensions/does-not-exist')
   expect(response?.status()).toBe(404)

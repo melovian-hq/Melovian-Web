@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-14T23:52:16.424Z",
+  "generatedAt": "2026-09-15T21:15:31.888Z",
   "source": "../Melovian-Extensions",
   "extensions": [
     {
@@ -324,6 +324,148 @@
         "playerHooks": 0
       },
       "risk": "low",
+      "audit": {
+        "status": "pass",
+        "warnings": []
+      }
+    },
+    {
+      "id": "visualizations",
+      "name": "Visualizations",
+      "version": "1.0.0",
+      "description": "Ambient playback visuals: an animated spectrum ribbon over the player, aurora washes on the now playing screen, a glowing gradient progress bar, floating particles, and a spinning cover overlay. Palette, particle sprite, seek thumb, and overlay are all configurable from the extension settings.",
+      "author": "Melovian",
+      "homepage": "https://github.com/melovian-hq/Melovian-Extensions",
+      "license": "Apache-2.0",
+      "tags": [
+        "visualizer",
+        "theme",
+        "animation",
+        "progress",
+        "particles"
+      ],
+      "icon": "/extensions/visualizations/icon.svg",
+      "screenshots": [
+        "/extensions/visualizations/screenshot.svg"
+      ],
+      "permissions": [
+        "styles",
+        "script",
+        "theme",
+        "track-decorations"
+      ],
+      "minAppVersion": "0.1.0",
+      "settings": [
+        {
+          "key": "palette",
+          "label": "Progress palette",
+          "type": "choice",
+          "options": [
+            "aurora",
+            "sunset",
+            "lagoon",
+            "ember",
+            "violet",
+            "mono",
+            "genre",
+            "custom"
+          ],
+          "default": "aurora"
+        },
+        {
+          "key": "custom-color",
+          "label": "Custom color (hex, used with the custom palette)",
+          "type": "text",
+          "default": "#7aa2ff"
+        },
+        {
+          "key": "intensity",
+          "label": "Color intensity",
+          "type": "choice",
+          "options": [
+            "calm",
+            "balanced",
+            "loud"
+          ],
+          "default": "balanced"
+        },
+        {
+          "key": "particles",
+          "label": "Progress bar particles",
+          "type": "choice",
+          "options": [
+            "notes",
+            "stars",
+            "sparkles",
+            "none"
+          ],
+          "default": "notes"
+        },
+        {
+          "key": "thumb",
+          "label": "Seek thumb",
+          "type": "choice",
+          "options": [
+            "none",
+            "disc",
+            "orb"
+          ],
+          "default": "none"
+        },
+        {
+          "key": "overlay",
+          "label": "Cover art overlay",
+          "type": "choice",
+          "options": [
+            "none",
+            "bars",
+            "note"
+          ],
+          "default": "none"
+        },
+        {
+          "key": "chrome",
+          "label": "Ambient chrome (spectrum ribbon, glows, aurora wash)",
+          "type": "boolean",
+          "default": true
+        }
+      ],
+      "package": {
+        "url": "https://melovian-hq.github.io/Melovian-Extensions/packages/visualizations-1.0.0.zip",
+        "sha256": "68c09bb01ce08daf53fcb3ab47cc55519b08add82c3653143ed4ea09fe161c4c",
+        "bytes": 31552,
+        "signature": "GgIHzQKLxJoKbF4er5ediV4V853mCgcQmvkexykBj0zf7Bbq7Y+OtZrql1yc/qTXPXkD2O+sRpDrGMbFspxOCQ=="
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "url": "https://melovian-hq.github.io/Melovian-Extensions/packages/visualizations-1.0.0.zip",
+          "sha256": "68c09bb01ce08daf53fcb3ab47cc55519b08add82c3653143ed4ea09fe161c4c",
+          "bytes": 31552,
+          "signature": "GgIHzQKLxJoKbF4er5ediV4V853mCgcQmvkexykBj0zf7Bbq7Y+OtZrql1yc/qTXPXkD2O+sRpDrGMbFspxOCQ==",
+          "releasedAt": "2026-09-15",
+          "notes": "- Initial release. Animated spectrum ribbon over the player, aurora wash on the now playing and TV screens, glow states that follow playback, and a configurable progress decoration pipeline. - Settings: progress palette (aurora, sunset, lagoon, ember, violet, mono, genre, custom), custom hex color, color intensity (calm, balanced, loud), particle sprite (notes, stars, sparkles, none), seek thumb (disc, orb), cover overlay (bars, note), and an ambient chrome toggle."
+        }
+      ],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-09-15",
+          "notes": "- Initial release. Animated spectrum ribbon over the player, aurora wash on the now playing and TV screens, glow states that follow playback, and a configurable progress decoration pipeline. - Settings: progress palette (aurora, sunset, lagoon, ember, violet, mono, genre, custom), custom hex color, color intensity (calm, balanced, loud), particle sprite (notes, stars, sparkles, none), seek thumb (disc, orb), cover overlay (bars, note), and an ambient chrome toggle."
+        }
+      ],
+      "externalUrls": [
+        "https://github.com/melovian-hq/Melovian-Extensions"
+      ],
+      "capabilities": {
+        "script": true,
+        "wasm": false,
+        "styles": 1,
+        "appTheme": true,
+        "trackRules": 1,
+        "playerHooks": 0
+      },
+      "risk": "medium",
       "audit": {
         "status": "pass",
         "warnings": []
