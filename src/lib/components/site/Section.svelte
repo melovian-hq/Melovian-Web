@@ -9,6 +9,7 @@
     title,
     description,
     class: className,
+    contentClass,
     children,
   }: {
     id: string
@@ -16,11 +17,12 @@
     title: string
     description?: string
     class?: string
+    contentClass?: string
     children: Snippet
   } = $props()
 </script>
 
-<section {id} class={cn('mx-auto w-full max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6', className)}>
+<section {id} class={cn('mx-auto w-full max-w-6xl scroll-mt-20 px-4 py-10 sm:px-6', className)}>
   <div {@attach reveal} class="max-w-2xl">
     <p class="text-primary text-sm font-semibold tracking-widest uppercase">
       {eyebrow}
@@ -35,7 +37,7 @@
     {/if}
   </div>
 
-  <div class="mt-10">
+  <div class={cn('mt-10', contentClass)}>
     {@render children()}
   </div>
 </section>

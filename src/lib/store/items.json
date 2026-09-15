@@ -1,0 +1,23 @@
+[
+  {
+    "id": "big-box-edition",
+    "name": "Big Box Physical Edition",
+    "tagline": "Melovian on a real disc, in a real box.",
+    "description": "A collector grade big box release of Melovian with a pressed install disc, a USB drive, and a numbered edition sticker. A limited run for the people who still miss proper software packaging.",
+    "edition": "Limited run",
+    "model": "big-box",
+    "status": "coming-soon",
+    "price": null,
+    "currency": "USD",
+    "stock": null,
+    "availabilityNote": "Ships sometime after Melovian reaches v1.0.",
+    "payments": ["stripe", "monero"],
+    "includes": [
+      "Pressed install disc in a full size tray",
+      "Melovian branded USB drive with offline installers",
+      "Cover art insert",
+      "Numbered edition sticker"
+    ],
+    "updated": "Mon, 14 Sep 2026 00:00:00 GMT"
+  }
+]

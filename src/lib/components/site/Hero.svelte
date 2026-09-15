@@ -40,7 +40,7 @@
   </div>
 
   <div
-    class="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pt-20 pb-14 text-center sm:px-6 sm:pt-28"
+    class="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pt-16 pb-14 text-center sm:px-6 sm:pt-24"
   >
     <div {@attach reveal} class="flex flex-col items-center">
       <h1 class="max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">

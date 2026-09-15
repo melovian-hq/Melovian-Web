@@ -42,6 +42,7 @@
       <a class="hover:text-foreground transition-colors" href={resolve('/changelog')}>
         Changelog
       </a>
+      <a class="hover:text-foreground transition-colors" href={resolve('/store')}> Store </a>
       <a class="hover:text-foreground transition-colors" href={resolve('/docs')}> Docs </a>
       <a
         class="hover:text-foreground transition-colors"

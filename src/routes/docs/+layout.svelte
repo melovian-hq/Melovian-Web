@@ -18,7 +18,7 @@
   })
 </script>
 
-<div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+<div class="mx-auto w-full max-w-6xl px-4 pt-6 pb-10 sm:px-6">
   <div class="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
     <aside class="hidden lg:block">
       <div class="sticky top-24">
